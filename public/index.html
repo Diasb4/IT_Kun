@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>Discussion Forum</h1>
+
+    <!-- Form to create a new topic -->
+    <div id="create-topic-form">
+        <h2>Create a New Topic</h2>
+        <form id="topic-form">
+            <input type="text" id="topic-title" placeholder="Title" required>
+            <textarea id="topic-description" placeholder="Description" required></textarea>
+            <button type="submit">Create Topic</button>
+        </form>
+    </div>
+
+    <!-- Display topics -->
+    <div id="topics-section">
+        <!-- Topics will be displayed here -->
+    </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
