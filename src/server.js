@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3001; // Changed to 3001 to avoid port conflict
 
@@ -9,9 +10,30 @@ app.use(express.json());
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// In-memory arrays to store topics and comments
+// Path to the backup file
+const DATA_FILE_PATH = path.join(__dirname, 'data', 'forum-data.json');
+
+// Load existing data from the file if it exists
 let topics = [];
 let comments = [];
+
+try {
+    const data = JSON.parse(fs.readFileSync(DATA_FILE_PATH, 'utf8'));
+    topics = data.topics || [];
+    comments = data.comments || [];
+} catch (err) {
+    console.log('No existing data found. Starting with empty data.');
+}
+
+// Function to save data to the file
+function saveData() {
+    const data = {
+        topics: topics,
+        comments: comments
+    };
+    fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(data, null, 2), 'utf8');
+    console.log('Data saved to file.');
+}
 
 // Route to get all topics
 app.get('/api/topics', (req, res) => {
@@ -32,6 +54,7 @@ app.post('/api/topics', (req, res) => {
         comments: []
     };
     topics.push(newTopic);
+    saveData(); // Save data after adding a new topic
     res.status(201).json(newTopic);
 });
 
@@ -62,6 +85,7 @@ app.post('/api/topics/:topicId/comments', (req, res) => {
         timestamp: new Date().toISOString()
     };
     topic.comments.push(newComment);
+    saveData(); // Save data after adding a new comment
     res.status(201).json(newComment);
 });
 
@@ -78,4 +102,17 @@ app.listen(PORT, () => {
 // Обработка ошибок при запуске сервера
 app.on('error', (err) => {
     console.error(`Server error: ${err.message}`);
+});
+
+// Shutdown hooks to save data before exiting
+process.on('SIGINT', () => {
+    saveData();
+    console.log('Data saved before shutdown.');
+    process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+    saveData();
+    console.log('Data saved before shutdown.');
+    process.exit(0);
 });
