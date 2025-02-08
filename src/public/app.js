@@ -1,10 +1,42 @@
+// Function to switch theme
+function switchTheme(theme) {
+    document.body.classList.remove('dark-theme', 'light-theme');
+    document.body.classList.add(theme + '-theme');
+}
+
+// Function to delete a topic
+function deleteTopic(topicId) {
+    if (confirm('Are you sure you want to delete this topic?')) {
+        fetch(`/api/topics/${topicId}`, {
+            method: 'DELETE'
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                fetchTopics(); // Refresh topics after deletion
+            })
+            .catch(error => console.error('Error deleting topic:', error));
+    }
+}
+
+// Function to filter topics by board
+function filterBoard(board) {
+    fetchTopics(board);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const topicForm = document.getElementById('topic-form');
     const topicsSection = document.getElementById('topics-section');
+    const boardsSection = document.getElementById('boards');
+    const popularThreadsSection = document.getElementById('popular-threads');
 
     // Function to fetch and display topics
-    function fetchTopics() {
-        fetch('/api/topics')
+    function fetchTopics(board) {
+        let url = '/api/topics';
+        if (board) {
+            url += `/board/${encodeURIComponent(board)}`;
+        }
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 topicsSection.innerHTML = '';
@@ -25,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <button type="submit">Submit</button>
                             </form>
                         </div>
+                        <button onclick="deleteTopic(${topic.id})">Delete</button>
                     `;
                     topicsSection.appendChild(topicDiv);
 
@@ -78,6 +111,56 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error fetching comments:', error));
     }
 
+
+
+    // Fetch and display boards
+    function fetchBoards() {
+        const boards = [
+            { name: 'Video Games', items: ['Video Games', 'Multiplayer', 'Mobile', 'Retro Games', 'RPG', 'Strategy'] },
+            { name: 'Interests', items: ['Comics&Cartoons', 'Technology', 'Film', 'Weapons', 'Auto', 'Sports', 'Science&Math', 'History&Humanity', 'KZ Politics', 'International Politics', 'Toys', 'Outdoors', 'Anime', 'Manga', 'Cosplay'] },
+            { name: 'University', items: ['General', 'Deans&Departments', 'Professors', 'System/Structure', 'Events', 'Olympiads', 'Classes', 'Clubs', 'Students', 'Work', 'For entrants'] },
+            { name: 'Courses', items: ['SE', 'IT', 'BDA', 'MT', 'MCS', 'CS', 'ST', 'IoT', 'EE', 'AIB/Ite/ITM', 'DJ', "Master's Degree"] },
+            { name: 'Other', items: ['Business', 'Travel', 'Fitness', 'Paranormal', 'Advice', 'LGBTQ', 'Current News', 'Memes', 'Random'] }
+        ];
+
+        boards.forEach(board => {
+            const boardDiv = document.createElement('div');
+            boardDiv.className = 'board';
+            boardDiv.innerHTML = `<strong>${board.name}</strong><ul>`;
+            board.items.forEach(item => {
+                const itemLi = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = item;
+                link.onclick = () => filterBoard(item);
+                itemLi.appendChild(link);
+                boardDiv.querySelector('ul').appendChild(itemLi);
+            });
+            boardDiv.innerHTML += '</ul>';
+            boardsSection.appendChild(boardDiv);
+        });
+    }
+
+    // Fetch and display popular threads
+    function fetchPopularThreads() {
+        fetch('/api/popular-threads')
+            .then(response => response.json())
+            .then(data => {
+                popularThreadsSection.innerHTML = '';
+                data.forEach(thread => {
+                    const threadDiv = document.createElement('div');
+                    threadDiv.className = 'thread';
+                    threadDiv.innerHTML = `
+                        <div class="title">${thread.title}</div>
+                        <div class="description">${thread.description}</div>
+                        <div class="timestamp">${new Date(thread.timestamp).toLocaleString()}</div>
+                    `;
+                    popularThreadsSection.appendChild(threadDiv);
+                });
+            })
+            .catch(error => console.error('Error fetching popular threads:', error));
+    }
+
     // Fetch topics on page load
     fetchTopics();
 
@@ -86,13 +169,14 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const title = document.getElementById('topic-title').value.trim();
         const description = document.getElementById('topic-description').value.trim();
-        if (title && description) {
+        const board = document.getElementById('topic-board').value;
+        if (title && description && board) {
             fetch('/api/topics', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ title: title, description: description })
+                body: JSON.stringify({ title: title, description: description, board: board })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -103,4 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(error => console.error('Error posting topic:', error));
         }
     });
+
+    // Fetch boards and popular threads on page load
+    fetchBoards();
+    fetchPopularThreads();
 });

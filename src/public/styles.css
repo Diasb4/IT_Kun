@@ -1,6 +1,16 @@
+:root {
+    --bg-color: #f4f4f9;
+    --text-color: #333;
+    --primary-color: #007bff;
+    --secondary-color: #e9ecef;
+    --panel-bg-color: #ffffff; /* Slightly white for light theme */
+    --panel-text-color: #333; /* Light black for light theme */
+}
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     margin: 0;
     padding: 20px;
 }
@@ -8,26 +18,24 @@ body {
 .container {
     max-width: 800px;
     margin: 0 auto;
-    background-color: #fff;
+    background-color: var(--panel-bg-color);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: var(--panel-text-color);
 }
 
-h1, h2 {
+#theme-switcher {
     text-align: center;
-}
-
-#topics-section {
-    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .topic {
-    background-color: #f9f9f9;
+    background-color: var(--secondary-color);
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 4px;
-    border-left: 4px solid #007bff;
+    border-left: 4px solid var(--primary-color);
 }
 
 .topic .title {
@@ -49,7 +57,7 @@ h1, h2 {
 }
 
 .comment {
-    background-color: #e9ecef;
+    background-color: var(--secondary-color);
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 4px;
@@ -73,7 +81,7 @@ h1, h2 {
 #topic-form button {
     width: 100%;
     padding: 10px;
-    background-color: #007bff;
+    background-color: var(--primary-color);
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -106,4 +114,101 @@ h1, h2 {
 
 #comment-form button:hover {
     background-color: #218838;
+}
+
+/* Dark Theme */
+body.dark-theme {
+    --bg-color: #1a1a1a;
+    --text-color: #ffffff;
+    --primary-color: #0056b3;
+    --secondary-color: #2d2d2d;
+    --panel-bg-color: #2d2d2d; /* Light black for dark theme */
+    --panel-text-color: #f4f4f9; /* Slightly white for dark theme */
+    background-image: url('public/assets/Wireframe-3.svg'); /* Убедитесь, что путь правильный */
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+body.dark-theme .container {
+    background-color: rgba(45, 45, 45, 0.8); /* Semi-transparent background for better readability */
+    color: #f4f4f9;
+}
+
+/* Light Theme */
+body.light-theme {
+    --bg-color: #f4f4f9;
+    --text-color: #333;
+    --primary-color: #007bff;
+    --secondary-color: #e9ecef;
+    --panel-bg-color: #ffffff; /* Slightly white for light theme */
+    --panel-text-color: #333; /* Light black for light theme */
+    background-image: url('public/assets/Wireframe-1.svg'); /* Убедитесь, что путь правильный */
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+body.light-theme .container {
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background for better readability */
+    color: #333;
+}
+
+/* Boards Section */
+#boards-section {
+    margin-bottom: 20px;
+}
+
+.board {
+    margin-bottom: 10px;
+}
+
+.board strong {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.board ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.board li {
+    padding: 5px 0;
+}
+
+.board a {
+    text-decoration: none;
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+.board a:hover {
+    text-decoration: underline;
+}
+
+/* Popular Threads Section */
+#popular-threads-section {
+    margin-bottom: 20px;
+}
+
+.thread {
+    background-color: var(--secondary-color);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.thread .title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.thread .description {
+    margin-top: 5px;
+}
+
+.thread .timestamp {
+    font-size: 0.9em;
+    color: #888;
 }

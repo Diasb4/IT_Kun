@@ -42,20 +42,29 @@ app.get('/api/topics', (req, res) => {
 
 // Route to post a new topic
 app.post('/api/topics', (req, res) => {
-    const { title, description } = req.body;
-    if (!title || !description) {
-        return res.status(400).json({ error: 'Title and description are required' });
+    const { title, description, board } = req.body;
+    if (!title || !description || !board) {
+        return res.status(400).json({ error: 'Title, description, and board are required' });
     }
     const newTopic = {
         id: topics.length + 1,
         title: title,
         description: description,
+        board: board,
         timestamp: new Date().toISOString(),
         comments: []
     };
     topics.push(newTopic);
     saveData(); // Save data after adding a new topic
     res.status(201).json(newTopic);
+});
+
+// Route to delete a topic by ID
+app.delete('/api/topics/:topicId', (req, res) => {
+    const topicId = parseInt(req.params.topicId, 10);
+    topics = topics.filter(topic => topic.id !== topicId);
+    saveData(); // Save data after deleting a topic
+    res.status(200).json({ message: 'Topic deleted successfully' });
 });
 
 // Route to get all comments for a specific topic
@@ -87,6 +96,19 @@ app.post('/api/topics/:topicId/comments', (req, res) => {
     topic.comments.push(newComment);
     saveData(); // Save data after adding a new comment
     res.status(201).json(newComment);
+});
+
+// Route to get topics by board
+app.get('/api/topics/board/:board', (req, res) => {
+    const board = req.params.board;
+    const filteredTopics = topics.filter(topic => topic.board === board);
+    res.json(filteredTopics);
+});
+
+// Route to get popular threads (based on number of comments)
+app.get('/api/popular-threads', (req, res) => {
+    const popularThreads = topics.sort((a, b) => b.comments.length - a.comments.length).slice(0, 5);
+    res.json(popularThreads);
 });
 
 // Serve the index.html file
